@@ -9,9 +9,19 @@ import SwiftUI
 
 @main
 struct IntermittentFastingAppApp: App {
+    @StateObject private var viewModel: AppViewModel = .default
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ZStack {
+                BackgroundLayerView()
+                ProgressLayerView()
+                UILayerView()
+            }
+            .environmentObject(viewModel)
+            .bottomPopover(isPresented: $viewModel.showOptionsPopover) {
+                Text("hi")
+            }
         }
     }
 }
