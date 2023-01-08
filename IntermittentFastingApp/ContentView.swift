@@ -7,15 +7,30 @@
 
 import SwiftUI
 
-struct ContentView: View {
+struct ProgressLayerView: View {
+    @State var progress: Double = 1.0
+    
     var body: some View {
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-            Text("Hello, world!")
+            Spacer()
+            CircularProgressView(progress: $progress)
+                .frame(maxWidth: 300)
+                .onTapGesture {
+                    progress = Double.random(in: 0...1)
+                }
+            Spacer()
         }
-        .padding()
+        .frame(maxWidth: .infinity)
+    }
+}
+
+struct ContentView: View {
+    var body: some View {
+        ZStack {
+            BackgroundLayerView()
+            ProgressLayerView()
+            UILayerView()
+        }
     }
 }
 
