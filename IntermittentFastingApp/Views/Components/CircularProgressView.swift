@@ -7,15 +7,16 @@
 
 import SwiftUI
 
-struct CircularProgressView: View {
-    // MARK: Class variables
-    private static let defaultStrokeStyle: LinearGradient = .init(
-        gradient: Gradient(colors: [Color.purple, Color.indigo]),
-        startPoint: .top,
-        endPoint: .bottom
-    )
-    private static let defaultLineWidth: CGFloat = 25
-    private static let defaultLineCap: CGLineCap = .round
+// MARK: Class variables
+fileprivate let defaultStrokeStyle: LinearGradient = .init(
+    gradient: Gradient(colors: [Color.purple, Color.indigo]),
+    startPoint: .top,
+    endPoint: .bottom
+)
+fileprivate let defaultLineWidth: CGFloat = 25
+fileprivate let defaultLineCap: CGLineCap = .round
+
+struct CircularProgressView<InsideContent: View>: View {
     
     // MARK: Instance variables
     @Binding var progress: Double
@@ -24,6 +25,8 @@ struct CircularProgressView: View {
     let lineWidth: CGFloat
     let lineCap: CGLineCap
     
+    @ViewBuilder let insideContent: () -> InsideContent
+    
     private var adjustedProgress: CGFloat {
         CGFloat(max(0, min(1, progress)))
     }
@@ -31,26 +34,30 @@ struct CircularProgressView: View {
     // MARK: Init
     init(
         progress: Binding<Double>,
-        strokeStyle: LinearGradient = Self.defaultStrokeStyle,
-        lineWidth: CGFloat = Self.defaultLineWidth,
-        lineCap: CGLineCap = Self.defaultLineCap
+        strokeStyle: LinearGradient = defaultStrokeStyle,
+        lineWidth: CGFloat = defaultLineWidth,
+        lineCap: CGLineCap = defaultLineCap,
+        @ViewBuilder _ insideContent: @escaping () -> InsideContent
     ) {
         self._progress = progress
         self.strokeStyle = AnyShapeStyle(strokeStyle)
         self.lineWidth = lineWidth
         self.lineCap = lineCap
+        self.insideContent = insideContent
     }
     
     init(
         progress: Binding<Double>,
         strokeStyle: AnyShapeStyle,
-        lineWidth: CGFloat = Self.defaultLineWidth,
-        lineCap: CGLineCap = Self.defaultLineCap
+        lineWidth: CGFloat = defaultLineWidth,
+        lineCap: CGLineCap = defaultLineCap,
+        @ViewBuilder _ insideContent: @escaping () -> InsideContent
     ) {
         self._progress = progress
         self.strokeStyle = strokeStyle
         self.lineWidth = lineWidth
         self.lineCap = lineCap
+        self.insideContent = insideContent
     }
     
     // MARK: Body
@@ -72,8 +79,38 @@ struct CircularProgressView: View {
                 )
                 .rotationEffect(.init(degrees: 270.0))
                 .animation(.linear, value: progress)
+            
+            insideContent()
         }
         .padding()
+    }
+}
+
+extension CircularProgressView where InsideContent == EmptyView {
+    init(
+        progress: Binding<Double>,
+        strokeStyle: LinearGradient = defaultStrokeStyle,
+        lineWidth: CGFloat = defaultLineWidth,
+        lineCap: CGLineCap = defaultLineCap
+    ) {
+        self._progress = progress
+        self.strokeStyle = AnyShapeStyle(strokeStyle)
+        self.lineWidth = lineWidth
+        self.lineCap = lineCap
+        self.insideContent = { EmptyView() }
+    }
+    
+    init(
+        progress: Binding<Double>,
+        strokeStyle: AnyShapeStyle,
+        lineWidth: CGFloat = defaultLineWidth,
+        lineCap: CGLineCap = defaultLineCap
+    ) {
+        self._progress = progress
+        self.strokeStyle = strokeStyle
+        self.lineWidth = lineWidth
+        self.lineCap = lineCap
+        self.insideContent = { EmptyView() }
     }
 }
 

@@ -14,12 +14,25 @@ struct ProgressLayerView: View {
         VStack {
             Spacer()
             if viewModel.currentSession != nil {
-                CircularProgressView(progress: $viewModel.progress)
-                    .frame(maxWidth: 300)
+                CircularProgressView(progress: $viewModel.progress) {
+                    RemainingTimeView()
+                }
+                .frame(maxWidth: 300)
             }
             Spacer()
         }
         .frame(maxWidth: .infinity)
+    }
+    
+    @ViewBuilder
+    private func RemainingTimeView() -> some View {
+        if viewModel.remaining > 0 {
+            Text(viewModel.remainingFormatted)
+        } else if viewModel.remaining < 0 {
+            Text("")
+        } else {
+            Text("Done!")
+        }
     }
 }
 

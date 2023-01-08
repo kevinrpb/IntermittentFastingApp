@@ -13,12 +13,17 @@ class AppViewModel: ObservableObject {
     
     // MARK: Session control
     @Published var currentSession: IFSession?
-    @Published var progress: Double = 0.0
+    @Published var progress: Double = 0
+    @Published var remaining: TimeInterval = -1
+    
+    @Published var remainingFormatted: String = ""
     
     // MARK: UI actions
     func startButtonAction() {
         withAnimation {
-            currentSession = .init(start: .now, kind: .debug10Seconds)
+            startUpdatingProgress()
+            // NOTE: Add 1 second here to account for timer settings
+            currentSession = .init(start: .now + 1, kind: .debug10Seconds)
         }
     }
     
@@ -50,15 +55,18 @@ class AppViewModel: ObservableObject {
 
         if ellapsed < goal {
             progress = ellapsed / goal
+            // NOTE: Add 1 second here to account for timer settings
+            remaining = goal - ellapsed + 1
         } else {
             progress = 1
+            remaining = 0
             stopUdatingProgress()
         }
+        
+        remainingFormatted = RelativeDateTimeFormatter().localizedString(fromTimeInterval: remaining)
     }
     
     // MARK: Singleton
-    private init() {
-        startUpdatingProgress()
-    }
+    private init() {}
     public static let `default`: AppViewModel = .init()
 }
