@@ -7,34 +7,43 @@
 
 import SwiftUI
 
+import PopupView
+
 struct BottomPopover<Content: View>: View {
+    let backgroundColor: Color
+    
     @ViewBuilder
     let content: () -> Content
     
     var body: some View {
-        HStack(spacing: 12) {
+        HStack {
             Spacer()
             VStack {
                 content()
             }
             Spacer()
         }
-        .padding(EdgeInsets(top: 37, leading: 24, bottom: 40, trailing: 24))
+        .background(backgroundColor)
         .background(Color.white.cornerRadius(20))
         .shadowedStyle()
     }
 }
 
 extension View {
-    func bottomPopover<Content: View>(isPresented: Binding<Bool>, @ViewBuilder _ content: @escaping () -> Content) -> some View {
+    func bottomPopover<Content: View>(
+        isPresented: Binding<Bool>,
+        backgroundColor: Color = .white,
+        content: @autoclosure @escaping () -> Content
+    ) -> some View {
         self.popup(
             isPresented: isPresented,
             type: .floater(verticalPadding: 0, useSafeAreaInset: false),
             position: .bottom,
+            closeOnTap: false,
             closeOnTapOutside: true,
             backgroundColor: .secondary
         ) {
-            BottomPopover(content: content)
+            BottomPopover(backgroundColor: backgroundColor, content: content)
         }
     }
 }

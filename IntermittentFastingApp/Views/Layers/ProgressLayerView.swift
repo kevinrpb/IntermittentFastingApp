@@ -16,6 +16,7 @@ struct ProgressLayerView: View {
             if viewModel.currentSession != nil {
                 CircularProgressView(progress: $viewModel.progress) {
                     RemainingTimeView()
+                        .font(.title.bold())
                 }
                 .frame(maxWidth: 300)
             }

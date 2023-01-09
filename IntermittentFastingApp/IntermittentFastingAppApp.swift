@@ -18,10 +18,12 @@ struct IntermittentFastingAppApp: App {
                 ProgressLayerView()
                 UILayerView()
             }
+            .bottomPopover(
+                isPresented: $viewModel.showOptionsPopover,
+                backgroundColor: .indigo.opacity(0.4),
+                content: OptionsPopover()
+            )
             .environmentObject(viewModel)
-            .bottomPopover(isPresented: $viewModel.showOptionsPopover) {
-                Text("hi")
-            }
         }
     }
 }
